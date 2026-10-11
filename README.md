@@ -8,11 +8,6 @@ Upload your handwritten notes → get structured notes, short notes, flashcards,
 a quiz and an audio overview, in the language you choose, organised into
 subjects and topics you can rearrange.
 
-![Python](https://img.shields.io/badge/python-3.12-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)
-![Status](https://img.shields.io/badge/status-working-brightgreen)
-![Runs offline](https://img.shields.io/badge/runs%20offline-yes%20(mock%20mode)-orange)
 
 </div>
 
