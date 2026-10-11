@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>StudyNotes Studio</title>
+<style>
+  :root{
+    --bg:#0f1117; --panel:#171a23; --panel2:#1e2230; --line:#2a2f3d;
+    --ink:#e8ebf2; --muted:#9aa3b5; --accent:#6c8cff; --ok:#3ddc97; --bad:#ff6b6b; --warn:#ffb454;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:14.5px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif;
+    display:flex;flex-direction:column;height:100vh;overflow:hidden}
+  header{display:flex;align-items:center;gap:14px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+  header .brand{font-weight:700;font-size:16px}
+  header .brand span{color:var(--accent)}
+  header .grow{flex:1}
+  header input[type=search]{background:var(--panel2);border:1px solid var(--line);color:var(--ink);
+    border-radius:8px;padding:7px 12px;width:260px;font-size:13.5px}
+  .prov{color:var(--muted);font-size:12px}
+  main{display:flex;flex:1;min-height:0}
+  aside{width:290px;border-right:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0}
+  aside .side-head{padding:12px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
+  aside .side-head b{font-size:13px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted)}
+  #tree{overflow:auto;flex:1;padding:8px}
+  .subject{margin-bottom:6px}
+  .subject .sname{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;cursor:pointer;font-weight:600}
+  .subject .sname:hover{background:var(--panel2)}
+  .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+  .subject .docs{margin-left:16px}
+  .docitem{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;cursor:pointer;color:var(--muted);font-size:13.5px}
+  .docitem:hover{background:var(--panel2);color:var(--ink)}
+  .docitem.on{background:var(--accent);color:#0b0d12;font-weight:600}
+  .docitem .st{width:8px;height:8px;border-radius:50%;flex:0 0 auto;background:var(--muted)}
+  .st.done{background:var(--ok)} .st.failed{background:var(--bad)} .st.running{background:var(--warn)} .st.queued{background:var(--muted)}
+  .content{flex:1;overflow:auto;padding:22px 26px}
+  .empty{color:var(--muted);max-width:560px;margin:8vh auto;text-align:center}
+  h1{font-size:22px;margin:0 0 4px}
+  h2{font-size:17px;margin:22px 0 8px}
+  h3{font-size:15px;margin:14px 0 6px}
+  .muted{color:var(--muted)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+  label{display:block;font-size:12.5px;color:var(--muted);margin:0 0 5px}
+  select,input[type=text],input[type=file],textarea{width:100%;background:var(--panel2);color:var(--ink);
+    border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:13.5px;font-family:inherit}
+  textarea{resize:vertical;line-height:1.5}
+  button{background:var(--accent);color:#0b0d12;border:0;border-radius:9px;padding:9px 15px;font-weight:600;font-size:13.5px;cursor:pointer}
+  button.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line);font-weight:500}
+  button.small{padding:5px 10px;font-size:12.5px}
+  button:disabled{opacity:.5;cursor:default}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .row>div{flex:1;min-width:160px}
+  .bar{height:7px;background:var(--panel2);border-radius:99px;overflow:hidden;margin:12px 0 6px}
+  .bar>i{display:block;height:100%;width:0;background:var(--accent);transition:width .4s}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0 14px;border-bottom:1px solid var(--line);padding-bottom:10px}
+  .tabs button{background:transparent;color:var(--muted);font-weight:500;padding:7px 13px;border:1px solid transparent}
+  .tabs button.on{background:var(--panel2);color:var(--ink);border-color:var(--line)}
+  .pane{display:none}.pane.on{display:block}
+  .topic{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+  .topic.drag{opacity:.45}
+  .topic .thead{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .topic .grip{cursor:grab;color:var(--muted);font-size:16px;user-select:none}
+  .topic .thead input{font-weight:600;font-size:15px;background:transparent;border:1px solid transparent}
+  .topic .thead input:hover,.topic .thead input:focus{border-color:var(--line);background:var(--panel2)}
+  .topic .tbtns{display:flex;gap:4px;margin-left:auto}
+  .tag{display:inline-block;background:var(--panel2);border:1px solid var(--line);color:var(--muted);
+    border-radius:99px;padding:1px 9px;font-size:11.5px;margin-right:5px}
+  .fc{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin:7px 0}
+  .fc b{color:var(--accent)}
+  .q{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:13px;margin:9px 0}
+  .q .opt{color:var(--muted);padding:2px 0}
+  .q .ans{color:var(--ok);font-size:13px;margin-top:5px}
+  .pill{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:99px;padding:2px 10px;font-size:12px;color:var(--muted)}
+  .toast{position:fixed;bottom:18px;right:18px;background:var(--panel2);border:1px solid var(--line);
+    border-radius:10px;padding:10px 15px;font-size:13.5px;box-shadow:0 8px 24px rgba(0,0,0,.4);opacity:0;transition:opacity .25s}
+  .toast.show{opacity:1}
+  .err{color:var(--bad)}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:6px}
+  audio{width:100%;margin-top:8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Study<span>Notes</span> Studio</div>
+  <input type="search" id="search" placeholder="Search topics…" />
+  <div class="grow"></div>
+  <span class="prov" id="prov"></span>
+</header>
+
+<main>
+  <aside>
+    <div class="side-head">
+      <b>Library</b>
+      <div class="grow" style="flex:1"></div>
+      <button class="ghost small" id="addSubject">+ Subject</button>
+    </div>
+    <div id="tree"></div>
+  </aside>
+
+  <div class="content" id="content">
+    <div class="empty">
+      <h1>Welcome</h1>
+      <p>Create a subject on the left, then add a document — upload your handwritten PDFs and StudyNotes will build the full study kit.</p>
+      <button id="startNew">Upload notes</button>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const toast = (m) => { const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2200); };
+
+async function api(path, opts={}) {
+  const r = await fetch(path, opts);
+  if (!r.ok) {
+    let d; try { d = (await r.json()).detail; } catch { d = r.statusText; }
+    throw new Error(d || 'Request failed');
+  }
+  return r.headers.get('content-type')?.includes('json') ? r.json() : r.text();
+}
+const form = (obj) => { const f=new FormData(); for(const k in obj) f.append(k, obj[k]); return f; };
+
+let LIB = { subjects: [], documents: [] };
+let CURRENT = null;      // full document object
+let POLL = null;
+
+// ---------------------------------------------------------------- bootstrap
+async function boot() {
+  const h = await api('/api/health');
+  $('#prov').textContent = `ocr:${h.providers.ocr} · llm:${h.providers.llm} · tts:${h.providers.tts}`;
+  await loadLibrary();
+}
+async function loadLibrary() {
+  LIB = await api('/api/library');
+  renderTree();
+}
+function subjectName(id){ return (LIB.subjects.find(s=>s.id===id)||{}).name || 'Unfiled'; }
+
+function renderTree() {
+  const tree = $('#tree');
+  tree.innerHTML = LIB.subjects.map(s => {
+    const docs = LIB.documents.filter(d => d.subject_id === s.id);
+    const items = docs.map(d => `
+      <div class="docitem ${CURRENT && CURRENT.id===d.id ? 'on':''}" data-doc="${d.id}">
+        <span class="st ${d.status||''}"></span>
+        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(d.title)}</span>
+        <span class="muted" style="font-size:11px">${d.topics||0}</span>
+      </div>`).join('') || `<div class="muted" style="padding:4px 8px;font-size:12px">no documents</div>`;
+    return `<div class="subject">
+      <div class="sname" data-subject="${s.id}">
+        <span class="dot" style="background:${esc(s.color||'#6c8cff')}"></span>
+        <span style="flex:1">${esc(s.name)}</span>
+        ${s.id!=='unfiled' ? `<span class="muted" data-subdel="${s.id}" title="Delete subject" style="padding:0 4px">×</span>`:''}
+      </div>
+      <div class="docs">${items}</div>
+    </div>`;
+  }).join('');
+}
+
+// ------------------------------------------------------------------ actions
+$('#addSubject').onclick = async () => {
+  const name = prompt('Subject name (e.g. Biology):');
+  if (!name) return;
+  const color = ['#3ddc97','#6c8cff','#ffb454','#ff6b6b','#b06cff'][Math.floor(Math.random()*5)];
+  await api('/api/subjects', { method:'POST', body: form({ name, color }) });
+  await loadLibrary(); toast('Subject added');
+};
+$('#startNew').onclick = () => renderUpload();
+
+$('#tree').addEventListener('click', async (e) => {
+  const del = e.target.closest('[data-subdel]');
+  if (del) { e.stopPropagation();
+    if (confirm('Delete this subject? Its documents move to Unfiled.')) {
+      await api('/api/subjects/'+del.dataset.subdel, { method:'DELETE' });
+      await loadLibrary();
+    } return;
+  }
+  const sub = e.target.closest('[data-subject]');
+  if (sub) {
+    const name = prompt('Rename subject:', subjectName(sub.dataset.subject));
+    if (name) { await api('/api/subjects/'+sub.dataset.subject, { method:'PATCH', body: form({ name }) }); await loadLibrary(); }
+    return;
+  }
+  const doc = e.target.closest('[data-doc]');
+  if (doc) openDocument(doc.dataset.doc);
+});
+
+$('#search').addEventListener('input', async (e) => {
+  const q = e.target.value.trim();
+  if (!q) { if (CURRENT) openDocument(CURRENT.id); else renderWelcome(); return; }
+  const r = await api('/api/search?q='+encodeURIComponent(q));
+  renderSearch(q, r.results);
+});
+
+// -------------------------------------------------------------- upload form
+function renderUpload() {
+  const opts = LIB.subjects.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
+  $('#content').innerHTML = `
+    <h1>Upload handwritten notes</h1>
+    <p class="muted">Add one or more PDFs. StudyNotes reads the handwriting, then builds structured notes, short notes, flashcards, a quiz and an audio overview.</p>
+    <div class="card">
+      <label>PDF file(s)</label>
+      <input type="file" id="files" accept="application/pdf" multiple />
+      <div class="row" style="margin-top:14px">
+        <div><label>Title (optional)</label><input type="text" id="title" placeholder="e.g. Cell Biology — Ch. 3" /></div>
+        <div><label>Subject</label><select id="subject">${opts}</select></div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <div><label>Output language</label><select id="target"></select></div>
+        <div><label>Notes are written in</label><select id="source"></select></div>
+      </div>
+      <div class="row" style="margin-top:14px;align-items:center">
+        <div style="flex:0"><label><input type="checkbox" id="audio" checked /> &nbsp;Generate audio overview</label></div>
+        <div style="flex:0;text-align:right"><button id="go">Create study kit</button></div>
+      </div>
+      <div class="bar"><i id="fill"></i></div>
+      <div class="muted" id="status"></div>
+    </div>`;
+  loadLangSelects();
+  $('#go').onclick = submitUpload;
+}
+
+async function loadLangSelects() {
+  const r = await api('/api/languages');
+  $('#target').innerHTML = r.languages.map(l=>`<option value="${l.code}" ${l.code===r.default?'selected':''}>${l.name}</option>`).join('');
+  $('#source').innerHTML = `<option value="auto" selected>Auto-detect</option>` + r.languages.map(l=>`<option value="${l.code}">${l.name}</option>`).join('');
+}
+
+async function submitUpload() {
+  const files = $('#files').files;
+  if (!files.length) { $('#status').innerHTML = '<span class="err">Choose at least one PDF.</span>'; return; }
+  const f = new FormData();
+  for (const x of files) f.append('files', x);
+  f.append('title', $('#title').value);
+  f.append('subject_id', $('#subject').value);
+  f.append('target_language', $('#target').value);
+  f.append('source_language', $('#source').value);
+  f.append('make_audio', $('#audio').checked);
+  $('#go').disabled = true; $('#status').textContent = 'Uploading…';
+  try {
+    const r = await api('/api/documents', { method:'POST', body: f });
+    await loadLibrary();
+    openDocument(r.document_id);
+  } catch (err) { $('#status').innerHTML = `<span class="err">${esc(err.message)}</span>`; $('#go').disabled=false; }
+}
+
+// ------------------------------------------------------------ document view
+async function openDocument(id) {
+  clearInterval(POLL);
+  CURRENT = await api('/api/documents/'+id);
+  renderTree();
+  renderDocument();
+  if (['queued','running'].includes(CURRENT.status)) {
+    POLL = setInterval(async () => {
+      CURRENT = await api('/api/documents/'+id);
+      renderTree();
+      if (['queued','running'].includes(CURRENT.status)) renderProgress();
+      else { clearInterval(POLL); renderDocument(); toast('Study kit ready'); }
+    }, 2000);
+  }
+}
+
+function renderProgress() {
+  $('#content').innerHTML = `
+    <h1>${esc(CURRENT.title)}</h1>
+    <p class="muted">${esc(CURRENT.message||'Working')}…</p>
+    <div class="bar"><i style="width:${CURRENT.progress||0}%"></i></div>
+    <p class="pill">${CURRENT.progress||0}%</p>`;
+}
+
+function renderDocument() {
+  const d = CURRENT;
+  const subjOpts = LIB.subjects.map(s=>`<option value="${s.id}" ${s.id===d.subject_id?'selected':''}>${esc(s.name)}</option>`).join('');
+  $('#content').innerHTML = `
+    <div class="row" style="align-items:center">
+      <div style="flex:2"><h1 id="docTitle">${esc(d.title)}</h1>
+        <p class="muted">${esc(d.target_language)} · ${d.pages||0} page(s) · ${esc((d.source_files||[]).join(', '))}</p></div>
+      <div style="flex:0;text-align:right">
+        <select id="moveSubj" style="width:auto;display:inline-block">${subjOpts}</select>
+        <button class="ghost small" id="rename">Rename</button>
+        <button class="ghost small" id="export">Export</button>
+        <button class="ghost small" id="del">Delete</button>
+      </div>
+    </div>
+    <div class="tabs" id="tabs">
+      <button data-p="org" class="on">Organise topics</button>
+      <button data-p="short">Short notes</button>
+      <button data-p="cards">Flashcards</button>
+      <button data-p="quiz">Quiz</button>
+      <button data-p="audio">Audio</button>
+    </div>
+    <div class="pane on" id="p-org"></div>
+    <div class="pane" id="p-short"></div>
+    <div class="pane" id="p-cards"></div>
+    <div class="pane" id="p-quiz"></div>
+    <div class="pane" id="p-audio"></div>`;
+
+  $('#tabs').onclick = (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    $$('#tabs button').forEach(x=>x.classList.toggle('on', x===b));
+    $$('.pane').forEach(p=>p.classList.toggle('on', p.id==='p-'+b.dataset.p));
+  };
+  $('#rename').onclick = async () => {
+    const t = prompt('Document title:', d.title);
+    if (t) { await api('/api/documents/'+d.id, { method:'PATCH', body: form({ title:t }) }); CURRENT.title=t; await loadLibrary(); renderDocument(); }
+  };
+  $('#del').onclick = async () => {
+    if (!confirm('Delete this document and its study kit?')) return;
+    await api('/api/documents/'+d.id, { method:'DELETE' }); CURRENT=null; await loadLibrary(); renderWelcome();
+  };
+  $('#moveSubj').onchange = async (e) => {
+    await api('/api/documents/'+d.id, { method:'PATCH', body: form({ subject_id: e.target.value }) });
+    await loadLibrary(); toast('Moved');
+  };
+  $('#export').onclick = () => {
+    if (confirm('Export as HTML? Cancel for Markdown.'))
+      window.open(`/api/documents/${d.id}/export?format=html`);
+    else window.open(`/api/documents/${d.id}/export?format=md`);
+  };
+
+  renderOrganizer(d);
+  renderStudy(d);
+}
+
+function renderWelcome() {
+  $('#content').innerHTML = `<div class="empty"><h1>Welcome</h1>
+    <p>Create a subject on the left, then add a document.</p>
+    <button id="startNew2">Upload notes</button></div>`;
+  $('#startNew2').onclick = renderUpload;
+}
+
+// ---------------------------------------------------------------- organiser
+function renderOrganizer(d) {
+  const topics = d.topics || [];
+  const list = topics.map((t, i) => topicCard(t, i, topics.length)).join('')
+    || `<p class="muted">No topics yet — add one, or re-run the document.</p>`;
+  $('#p-org').innerHTML = `
+    <div class="row" style="align-items:center;margin-bottom:12px">
+      <div style="flex:1" class="muted">Drag topics to reorder, edit any field inline. Changes save automatically.</div>
+      <div style="flex:0">
+        <button class="ghost small" id="smart">Smart organise</button>
+        <button class="ghost small" id="addTopic">+ Topic</button>
+        <button class="small" id="saveOrder">Save order</button>
+      </div>
+    </div>
+    <div id="topicList">${list}</div>`;
+
+  $('#addTopic').onclick = async () => {
+    const h = prompt('New topic heading:'); if (!h) return;
+    await api(`/api/documents/${d.id}/topics`, { method:'POST', body: form({ heading:h }) });
+    await refreshDoc();
+  };
+  $('#smart').onclick = async () => {
+    try {
+      const r = await api(`/api/documents/${d.id}/auto-organize`, { method:'POST' });
+      toast(r.changed ? 'Reorganised' : (r.note || 'No change'));
+      await refreshDoc();
+    } catch (e) { toast(e.message); }
+  };
+  $('#saveOrder').onclick = saveOrder;
+
+  wireTopicCards(d);
+}
+
+function topicCard(t, i, n) {
+  return `<div class="topic" draggable="true" data-id="${t.id}">
+    <div class="thead">
+      <span class="grip">⠿</span>
+      <span class="pill">${i+1}</span>
+      <input type="text" data-field="heading" value="${esc(t.heading)}" />
+      <div class="tbtns">
+        <button class="ghost small" data-act="up" ${i===0?'disabled':''}>↑</button>
+        <button class="ghost small" data-act="down" ${i===n-1?'disabled':''}>↓</button>
+        <select data-act="mergesel" class="small" style="width:auto;display:inline-block;padding:5px 8px">
+          <option value="">merge into…</option>
+        </select>
+        <button class="ghost small" data-act="del">Delete</button>
+      </div>
+    </div>
+    ${(t.tags&&t.tags.length)?`<div style="margin:2px 0 8px">${t.tags.map(x=>`<span class="tag">${esc(x)}</span>`).join('')}</div>`:''}
+    <label>Points (one per line)</label>
+    <textarea data-field="points" rows="3">${esc((t.points||[]).join('\n'))}</textarea>
+    <label style="margin-top:8px">Detail</label>
+    <textarea data-field="detail" rows="2">${esc(t.detail||'')}</textarea>
+    <label style="margin-top:8px">Tags (comma separated)</label>
+    <input type="text" data-field="tags" value="${esc((t.tags||[]).join(', '))}" />
+  </div>`;
+}
+
+function wireTopicCards(d) {
+  // merge dropdowns need the other topics
+  $$('.topic').forEach(card => {
+    const id = card.dataset.id;
+    const sel = $('[data-act="mergesel"]', card);
+    (d.topics||[]).forEach(o => { if (o.id!==id) sel.insertAdjacentHTML('beforeend', `<option value="${o.id}">${esc(o.heading)}</option>`); });
+  });
+
+  // inline save on change
+  $$('.topic').forEach(card => {
+    const id = card.dataset.id;
+    $$('[data-field]', card).forEach(inp => {
+      inp.addEventListener('change', () => saveField(id, inp.dataset.field, inp.value));
+    });
+  });
+
+  // buttons
+  $$('.topic').forEach(card => {
+    const id = card.dataset.id;
+    const idx = (d.topics||[]).findIndex(t=>t.id===id);
+    $$('[data-act]', card).forEach(btn => {
+      const act = btn.dataset.act;
+      if (act === 'mergesel') return;
+      btn.onclick = async () => {
+        if (act==='up') await moveTo(id, idx-1);
+        else if (act==='down') await moveTo(id, idx+1);
+        else if (act==='del') { if (confirm('Delete this topic?')) { await api(`/api/documents/${d.id}/topics/${id}`, {method:'DELETE'}); await refreshDoc(); } }
+      };
+    });
+    const sel = $('[data-act="mergesel"]', card);
+    sel.onchange = async () => { if (sel.value) { await api(`/api/documents/${d.id}/topics/${id}/merge`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({into: sel.value})}); toast('Merged'); await refreshDoc(); } };
+  });
+
+  // drag & drop reordering
+  let dragId = null;
+  $$('.topic').forEach(card => {
+    card.addEventListener('dragstart', () => { dragId = card.dataset.id; card.classList.add('drag'); });
+    card.addEventListener('dragend', () => { card.classList.remove('drag'); dragId=null; });
+    card.addEventListener('dragover', (e) => e.preventDefault());
+    card.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      if (!dragId || dragId===card.dataset.id) return;
+      const ids = (d.topics||[]).map(t=>t.id);
+      const from = ids.indexOf(dragId), to = ids.indexOf(card.dataset.id);
+      ids.splice(to, 0, ids.splice(from,1)[0]);
+      d.topics = ids.map(i => d.topics.find(t=>t.id===i));
+      await saveOrder();
+    });
+  });
+}
+
+async function saveField(tid, field, value) {
+  let v = value;
+  if (field === 'points') v = value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if (field === 'tags') v = value.split(',').map(s=>s.trim()).filter(Boolean);
+  await api(`/api/documents/${CURRENT.id}/topics/${tid}`, {
+    method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({[field]: v}) });
+  toast('Saved');
+}
+async function moveTo(tid, index) {
+  await api(`/api/documents/${CURRENT.id}/topics/${tid}/move`, {
+    method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({index}) });
+  await refreshDoc();
+}
+async function saveOrder() {
+  await api(`/api/documents/${CURRENT.id}/topics`, {
+    method:'PUT', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ topics: CURRENT.topics }) });
+  toast('Order saved'); await refreshDoc();
+}
+async function refreshDoc() {
+  CURRENT = await api('/api/documents/'+CURRENT.id);
+  renderOrganizer(CURRENT); await loadLibrary();
+}
+
+// ------------------------------------------------------------- study panes
+function renderStudy(d) {
+  const sn = d.short_notes || {};
+  $('#p-short').innerHTML = `<h2>${esc(sn.title||'Short notes')}</h2><ul>${(sn.bullets||[]).map(b=>`<li>${esc(b)}</li>`).join('')}</ul>`;
+
+  const cards = (d.flashcards||{}).cards || [];
+  $('#p-cards').innerHTML = cards.map(c=>`<div class="fc"><b>${esc(c.front)}</b><div>${esc(c.back)}</div></div>`).join('') || '<p class="muted">No flashcards.</p>';
+
+  const qs = (d.quiz||{}).questions || [];
+  $('#p-quiz').innerHTML = qs.map((q,i)=>{
+    const opts = (q.options||[]).map((o,j)=>`<div class="opt">${'ABCD'[j]||j}. ${esc(o)}</div>`).join('');
+    const ai = q.answer_index ?? 0;
+    return `<div class="q"><b>${i+1}. ${esc(q.question)}</b>${opts}<div class="ans">Answer: ${'ABCD'[ai]||ai}</div>${q.explanation?`<div class="opt">${esc(q.explanation)}</div>`:''}</div>`;
+  }).join('') || '<p class="muted">No quiz.</p>';
+
+  const a = d.audio_script || {};
+  let h = `<h2>${esc(a.title||'Audio overview')}</h2>`;
+  if (d.audio_file) h += `<audio controls src="/api/documents/${d.id}/audio"></audio>`;
+  h += `<p>${esc(a.script||'')}</p>`;
+  $('#p-audio').innerHTML = h;
+}
+
+// ------------------------------------------------------------------- search
+function renderSearch(q, results) {
+  const body = results.length ? results.map(r => `
+    <div class="card"><h3 style="margin-top:0">${esc(r.title)}</h3>
+      ${r.topics.length? r.topics.map(t=>`<div class="muted">• ${esc(t.heading)}</div>`).join('') : '<span class="muted">title match</span>'}
+      <div style="margin-top:8px"><button class="ghost small" data-open="${r.document_id}">Open</button></div>
+    </div>`).join('') : `<p class="muted">No matches for “${esc(q)}”.</p>`;
+  $('#content').innerHTML = `<h1>Search: ${esc(q)}</h1>${body}`;
+  $$('[data-open]').forEach(b => b.onclick = () => { $('#search').value=''; openDocument(b.dataset.open); });
+}
+
+boot();
+</script>
+</body>
+</html>

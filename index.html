@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>StudyNotes Studio — handwritten PDFs to study kits</title>
+<meta name="description" content="A single-executable desktop app that turns handwritten PDFs into structured notes, short notes, flashcards, quizzes and audio overviews — in English and 12 Indian languages." />
+<style>
+  :root{
+    --bg:#0f1117;--panel:#171a23;--panel2:#1e2230;--line:#2a2f3d;
+    --ink:#e8ebf2;--muted:#9aa3b5;--accent:#6c8cff;--ok:#3ddc97;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif}
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:900px;margin:0 auto;padding:64px 22px 90px}
+  .hero{text-align:center;padding:40px 0 24px}
+  .hero h1{font-size:clamp(30px,6vw,50px);margin:0 0 14px;letter-spacing:-.5px}
+  .hero p{font-size:19px;color:var(--muted);max-width:640px;margin:0 auto 26px}
+  .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-block;padding:12px 22px;border-radius:11px;font-weight:600}
+  .btn.primary{background:var(--accent);color:#0b0d12}
+  .btn.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+  .tags{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:22px 0 0}
+  .tag{background:var(--panel2);border:1px solid var(--line);color:var(--muted);
+    border-radius:99px;padding:3px 12px;font-size:13px}
+  h2{font-size:24px;margin:56px 0 16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .card h3{margin:0 0 8px;font-size:16px}
+  .card p{margin:0;color:var(--muted);font-size:14.5px}
+  .flow{background:var(--panel2);border:1px solid var(--line);border-radius:12px;
+    padding:18px;overflow-x:auto;font:13.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
+  ul.feat{list-style:none;padding:0}
+  ul.feat li{padding:9px 0;border-bottom:1px solid var(--line);color:var(--muted)}
+  ul.feat li b{color:var(--ink)}
+  footer{margin-top:70px;padding-top:22px;border-top:1px solid var(--line);
+    color:var(--muted);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <h1>StudyNotes Studio</h1>
+    <p>Turn handwritten PDFs into complete, multilingual study kits — as a single desktop app.</p>
+    <div class="btns">
+      <a class="btn primary" href="https://github.com/">View on GitHub</a>
+      <a class="btn ghost" href="https://github.com/#readme">Read the docs</a>
+    </div>
+    <div class="tags">
+      <span class="tag">Python 3.12</span>
+      <span class="tag">MIT licensed</span>
+      <span class="tag">Windows · Linux · macOS</span>
+      <span class="tag">Runs offline</span>
+      <span class="tag">English + 12 Indian languages</span>
+    </div>
+  </div>
+
+  <h2>Handwriting in, study kit out</h2>
+  <p style="color:var(--muted)">Give it the messy stuff — a PDF of handwritten lecture notes.
+  Get back a complete study kit, written in the language you choose.</p>
+
+  <div class="grid" style="margin-top:20px">
+    <div class="card"><h3>📥 Upload everything at once</h3>
+      <p>Select all your PDFs in one go — they become a single study kit, filed under a subject.</p></div>
+    <div class="card"><h3>📝 Structured notes</h3>
+      <p>Titled sections with bullet points and a short detail paragraph, in your target language.</p></div>
+    <div class="card"><h3>⚡ Short notes</h3>
+      <p>Crisp, exam-eve revision bullets distilled from the full notes.</p></div>
+    <div class="card"><h3>🃏 Flashcards</h3>
+      <p>Active-recall front/back cards for every key term and fact.</p></div>
+    <div class="card"><h3>❓ Quiz</h3>
+      <p>Multiple-choice questions with answers and explanations.</p></div>
+    <div class="card"><h3>🔊 Audio overview</h3>
+      <p>A spoken narration you can play in-app, generated from your notes.</p></div>
+  </div>
+
+  <h2>Organise your topics properly</h2>
+  <ul class="feat">
+    <li><b>Edit any topic</b> — rename, edit points and detail, add tags.</li>
+    <li><b>Drag to reorder</b> topics, or use the ↑ / ↓ buttons.</li>
+    <li><b>Merge, delete or add</b> topics freely.</li>
+    <li><b>Smart organise</b> — let the model put topics in the best learning order.</li>
+    <li><b>Search</b> across every topic in every document.</li>
+    <li><b>Group into subjects</b> — and move documents around any time.</li>
+    <li><b>Export</b> any kit as Markdown, HTML or JSON.</li>
+  </ul>
+
+  <h2>How it works</h2>
+  <div class="flow">
+PDF(s) ──► rasterise ──► OCR ──► structure ──┬─► short notes<br/>
+           (PyMuPDF)   (provider)  (LLM)     ├─► flashcards<br/>
+                                             ├─► quiz<br/>
+                                             └─► audio script ──► TTS ──► audio
+  </div>
+  <p style="color:var(--muted)">OCR, LLM and TTS each sit behind a swappable interface, so you can point it at
+  OpenAI, Sarvam AI, Groq, or a local model. With mock providers it runs fully offline.</p>
+
+  <h2>Get started</h2>
+  <div class="flow">
+git clone https://github.com/&lt;your-username&gt;/studynotes-studio.git<br/>
+cd studynotes-studio<br/>
+pip install -r requirements.txt<br/>
+python launcher.py
+  </div>
+  <p style="color:var(--muted)">On Windows, build the executable with <code>build\build_windows.bat</code>,
+  or let the included GitHub Actions workflow build it for you.</p>
+
+  <footer>
+    MIT licensed · built for students who still write notes by hand.
+  </footer>
+
+</div>
+</body>
+</html>

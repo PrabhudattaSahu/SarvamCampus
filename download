@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local config & secrets
+.env
+
+# Runtime data (library, uploads, artifacts)
+data/
+~/.studynotes/
+
+# Build output
+dist/
+build/studynotes/
+*.spec.bak
+
+# OS junk
+.DS_Store
+Thumbs.db

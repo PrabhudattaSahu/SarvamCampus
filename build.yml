@@ -1,0 +1,49 @@
+name: Build desktop app
+
+# Push to main (or run manually from the Actions tab) and GitHub builds the
+# executable for Windows, Linux and macOS and attaches them as downloadable
+# artifacts. This is the easiest way to get StudyNotes.exe without a Windows
+# machine: download it from the run's "Artifacts" section.
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact: StudyNotes-windows
+            path: dist/StudyNotes.exe
+          - os: ubuntu-latest
+            artifact: StudyNotes-linux
+            path: dist/StudyNotes
+          - os: macos-latest
+            artifact: StudyNotes-macos
+            path: dist/StudyNotes
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-build.txt
+
+      - name: Build executable
+        run: pyinstaller --clean --noconfirm build/studynotes.spec
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.path }}
+          if-no-files-found: error
