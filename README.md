@@ -232,15 +232,4 @@ studynotes-desktop/
 - [ ] Spaced-repetition study mode
 - [ ] Per-language OCR accuracy evaluation harness
 
----
 
-## Contributing
-
-Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). This project
-follows the [Contributor Covenant](CODE_OF_CONDUCT.md).
-
----
-
-## License
-
-[MIT](LICENSE) © 2026 Prabhudatta Sahu
